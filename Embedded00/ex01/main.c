@@ -17,6 +17,8 @@ int	main(void)
 {
 	DDRB |= (1 << DDB0);
 	PORTB |= (1 << PORTB0);
-
+	while (1)
+	{
+	}
 	return (0);
 }

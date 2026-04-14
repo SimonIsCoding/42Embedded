@@ -8,7 +8,7 @@ int main(void)
 	while (1)
 	{
 
-		if (!(PIND & (1 << PIND2)))
+		if (!(PIND & (1 << PD2)))
 		{
 			DDRB |= (1 << DDB0);
 			PORTB |= (1 << PORTB0);
