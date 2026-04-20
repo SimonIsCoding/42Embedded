@@ -5,11 +5,6 @@
 
 int	main(void)
 {
-	//on veut turn off et turn on LA LED D2 PB1
-	//on doit configurer le timer1 pour controler la led
-	//on doit ecrire une while(1) vide
-	//Et on ne peut pas utiliser PORTX
-	
 	//configure PB1 LED as output in DDRB register, by default it is in input
 	// in output because we want to show the light
 	DDRB |= (1 << DDB1);
