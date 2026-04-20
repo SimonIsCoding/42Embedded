@@ -4,7 +4,7 @@ int	main(void)
 {
 	volatile long i = 0;// we use volatile to be able to enter in the useless while loop, otherwise it doesn't enter 
 	// uint8_t is used because it has size of 1 byte. Which is the size of one operatio
-	DDRB |= (1 << DDB0);
+	DDRB |= (1 << DDB1);
 
 	// 255 * 255 * 128 ~= 8*10e6 operations
 	// which represent 0.5 second for our microconrtoller
@@ -15,8 +15,8 @@ int	main(void)
 	while (1)
 	{
 		i = 0;
-		while (i < 400000)
+		while (i < 250000)
 			i++;
-		PORTB ^= (1 << PORTB0);
+		PORTB ^= (1 << PORTB1);
 	}
 }
