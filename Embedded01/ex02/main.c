@@ -2,9 +2,11 @@
 // Microchip: megaAVR Data Sheet
 #include <avr/io.h>
 
-//what the subject ask us is to turn on the LED every 0.9second during 0.1second
-// basically, contrary to the last exercise, you have to change one parameter
-//which one ?
+// what the subject ask us is to turn on the LED every 0.9second during 0.1second
+// duty cycle: 
+// Non inversed mode: ON-OFF
+// inversed mode: OFF-ON
+// the way the exercise was done was: first 0.1 seconds, the LED is ON, the other 0.9seconds, the LED is OFF
 int	main(void)
 {
 	DDRB |= (1 << DDB1);
