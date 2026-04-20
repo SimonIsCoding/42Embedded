@@ -19,7 +19,7 @@ int main(void)
 
 	while (1)
 	{
-		//	si SW1 appuyé  → OCR1A += 10% de ICR1
+		//	if SW1 pressed  → OCR1A += 10% of ICR1
 		if (!(PIND & (1 << PD2)))
 		{
 			if (OCR1A < 15620)
@@ -28,7 +28,7 @@ int main(void)
 				;
 			_delay_ms(20);
 		}
-		//  si SW2 appuyé  → OCR1A -= 10% de ICR1
+		//  if SW2 pressed  → OCR1A -= 10% of ICR1
 		if (!(PIND & (1 << PD4)))
 		{
 			if (OCR1A > 1562)
