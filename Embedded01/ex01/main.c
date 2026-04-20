@@ -10,7 +10,8 @@ int	main(void)
 	//on doit ecrire une while(1) vide
 	//Et on ne peut pas utiliser PORTX
 	
-	//configurer la led PB1 en sortie dans le registre DDRB
+	//configure PB1 LED as output in DDRB register, by default it is in input
+	// in output because we want to show the light
 	DDRB |= (1 << DDB1);
 	
 	// Refering to the ATMega328p Datasheet:
@@ -20,7 +21,7 @@ int	main(void)
 	// OCR1A because we refer to Timer1 (p. 121)
 	OCR1A = 7812;                            // max timer value
 	// CTC Mode  (p.155)
-	// Activate WGM12 p.146 to reinitialise CTC when OCR1A is reached
+	// Activate WGM12 (p.146) to reinitialise CTC when OCR1A is reached
 	TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);	// register to configure Timer1
 	TCCR1A |= (1 << COM1A0); // Automatic toggle for PB1 LED(p.140)
 	while(1)
