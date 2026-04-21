@@ -2,7 +2,7 @@
 MCU			= atmega328p
 F_CPU		= 16000000UL
 BAUD		= 115200
-PORT		= /dev/ttyUSB1
+PORT		= /dev/ttyUSB0
 PROGRAMMER	= arduino
 
 CC			= avr-gcc
