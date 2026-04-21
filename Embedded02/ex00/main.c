@@ -5,36 +5,40 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
-#define FOSC	1843200 // Clock Speed
-#define BAUD	115200
-#define MYUBRR	FOSC/16/BAUD-1
-
 //the subject specifies: The MCU’s UART must be configured as 115200 8N1
 //meaning: Baudrate: 115200 8bits 1 stop
 
 //UBRRnL must be calculated based on UART_BAUDRATE and F_CPU
+//UBRR = 16 = 0000 0000 0001 0000
 //UART_BAUDRATE = 115200 - what about 8N1 - BaudRate -> bit per second bps
 //F_CPU			= 16000000UL
 
+//to build this function, check 20.6.1 Sending Frames with 5 to 8 Data Bit - p.186
 void	uart_tx(char c)
 {
+	while ( !( UCSR0A & (1 << UDRE0)) )
+		;
+/* Put data into buffer, sends the data */
+	UDR0 = c;
 }
 
-void USART_Init( unsigned int ubrr)
+void USART_Init()
 {
 	/* Set baud rate */
 	UBRR0H = (unsigned char)(16 >> 8);
 	UBRR0L = (unsigned char)(16);
 
-	/* Set frame format: 8data, 1stop bit */
-	UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
-	//USBS0 &= ~(1 << TXB8);
-
-	//activate double speed
+	//activate double speed - Clock Generation p.180 
 	UCSR0A |= (1 << U2X0);
 
-	/* able receiver and transmitter */
+	/* able receiver and transmitter - as mentionned in the datasheet piece of code */
+	// p.185: USART Initialization
 	UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+
+	/* Set frame format: 8data, 1stop bit - check p.203 
+	check Table 20-11. UCSZn Bits Settings && Table 20-10. USBS Bit Settings */ 
+	UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+	//USBS0 &= ~(1 << TXB8);
 }
 
 // to caclulate UBRRn, we need to check p.180 of the datasheet:
@@ -48,9 +52,11 @@ void USART_Init( unsigned int ubrr)
 
 int	main(void)
 {
-	USART_Init(MYUBRR);
+	USART_Init();
 
 	while (1)
 	{
+		uart_tx('Z');
+		_delay_ms(1000);
 	}
 }
