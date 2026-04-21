@@ -3,6 +3,15 @@
 
 #include <avr/io.h>
 
+// I am using the 1024 Prescaler, but I could have used a more accurate one like 256
+// WHy ?
+// Because Timer1 is a 2bytes/octet register
+// 2 bytes meaning the counter max value can reach 65535
+// and : F_CPU: 16 000 000 / 256 = 62500, meaning in the range between 0 < 62500 < 65535
+// and instead of using the datasheet complex formula (p.156), I could have use:
+// 16 000 000 / 1024 = 15 625 -> intern clock in for 1Hz
+// And we want the light blinking every 0.5 seconds -> 15 625 * 0.5 = 7812.5 => rounded = 7812
+
 int	main(void)
 {
 	//configure PB1 LED as output in DDRB register, by default it is in input

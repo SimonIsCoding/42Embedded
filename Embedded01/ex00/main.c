@@ -15,7 +15,7 @@ int	main(void)
 	while (1)
 	{
 		i = 0;
-		while (i < 250000)
+		while (i < 400000)
 			i++;
 		PORTB ^= (1 << PORTB1);
 	}
