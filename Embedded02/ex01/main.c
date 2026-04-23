@@ -18,14 +18,17 @@ void	uart_tx(char c)
 {
 	while ( !( UCSR0A & (1 << UDRE0)) )
 		;
-/* Put data into buffer, sends the data */
+	/* Put data into buffer, sends the data */
 	UDR0 = c;
 }
 
 void uart_printstr(const char* str)
 {
 	while (*str)
+	{
+		uart_tx(*str);
 		str++;
+	}
 }
 
 void USART_Init()
@@ -47,8 +50,22 @@ void USART_Init()
 	//USBS0 &= ~(1 << TXB8);
 }
 
-//__vector11
+void __vector_11(void) __attribute__((__signal__));
 
+void __vector_11(void)
+{
+	static uint8_t count = 0;
+	count++;
+	if (count == 2)
+	{
+		uart_printstr("Hello World!\r\n");
+		count = 0;
+	}
+}
+
+//__vector11 - Timer/Counter1 Compare Match A
+//p.66 - Interrupt Vectors in ATmega48A and ATmega48PA
+//void __vector_11(void) __attribute__((__signal__));
 
 // to caclulate UBRRn, we need to check p.180 of the datasheet:
 // we have two formulas for Asynchronous modes
@@ -61,15 +78,16 @@ void USART_Init()
 int	main(void)
 {
 	USART_Init();
-
+	sei();	
 	// F_CPU / Prescaler = Value for OCR1A
 	// 16000000 / 256 = 62500;
-	OCR1A = 62500; 
-	TCCR1B |= (1 << WGM12) | (1 << CS12) | (1 << CS10);
-	TCCR1A |= (1 << COM1A0);
-
-	//SREG
-	//Active Timer1?
+	OCR1A = 62499; 
+	// (p.142) - TCCR1B – Timer/Counter1 Control Register B
+	TCCR1B |= (1 << WGM12) | (1 << CS12);
+	//TCCR1A |= (1 << COM1A0);
+	
+	// 16.11.8 TIMSK1 – Timer/Counter1 Interrupt Mask Register (p.144)
+	TIMSK1 |= (1 << OCIE1A);
 	while (1)
 	{
 	}
