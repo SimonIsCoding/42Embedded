@@ -22,15 +22,6 @@ void	uart_tx(char c)
 	UDR0 = c;
 }
 
-void uart_printstr(const char* str)
-{
-	while (*str)
-	{
-		uart_tx(*str);
-		str++;
-	}
-}
-
 void USART_Init()
 {
 	/* Set baud rate */
@@ -42,7 +33,9 @@ void USART_Init()
 
 	/* able receiver and transmitter - as mentionned in the datasheet piece of code */
 	// p.185: USART Initialization
-	UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+	// p.201: 20.11.3 UCSRnB – USART Control and Status Register n B
+	// Bit 7 – RXCIEn: RX Complete Interrupt Enable n
+	UCSR0B = (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0);
 
 	/* Set frame format: 8data, 1stop bit - check p.203 
 	check Table 20-11. UCSZn Bits Settings && Table 20-10. USBS Bit Settings */ 
@@ -50,47 +43,35 @@ void USART_Init()
 	//USBS0 &= ~(1 << TXB8);
 }
 
-//__vector11 - Timer/Counter1 Compare Match A
-//p.66 - Interrupt Vectors in ATmega48A and ATmega48PA
-//void __vector_11(void) __attribute__((__signal__));
-void __vector_11(void) __attribute__((__signal__));
-
-void __vector_11(void)
+char	invert_letter(char c)
 {
-	static uint8_t count = 0;
-	count++;
-	if (count == 2)
-	{
-		uart_printstr("Hello World!\r\n");
-		count = 0;
-	}
+	if (c >= 97 && c <= 122)
+		c -= 32;
+	else if (c >= 65 && c <= 90)
+		c += 32;
+	return c;
 }
 
-// to caclulate UBRRn, we need to check p.180 of the datasheet:
-// we have two formulas for Asynchronous modes
-// we have to check p.199 of the datasheet for F_CPU = 16e6, which one is the best
-// We can see that the error rate is lower for U2Xn = 1, so we will use the U2X0 = 1 formula,
-// meaning the double speed one:
-// UBRRn = (fOSC / (8 * BAUD)) - 1
-// fOSC = 16 000 000, BAUD = 115200
-// UBRRn = 16.3611111 ~= 16
+void __vector_18(void) __attribute__((__signal__));
+
+void __vector_18(void)
+{
+	char c = UDR0;
+	c = invert_letter(c);
+	uart_tx(c);
+}
+
 int	main(void)
 {
 	USART_Init();
-	sei();
-
-	// datasheet p.132 for OCR1A value:
-	// fOCnA = fclk_I/O / (2 * N * (1 + OCRnA)
-	// Prescaler: N = 256 
-	// fOCnA = 1Hz	
-	// fclk_I/O = 16 000 000;
+	sei();	
+	// F_CPU / Prescaler = Value for OCR1A
+	// 16000000 / 256 = 62500;
 	OCR1A = 62499; 
 	// (p.142) - TCCR1B – Timer/Counter1 Control Register B
 	TCCR1B |= (1 << WGM12) | (1 << CS12);
 	//TCCR1A |= (1 << COM1A0);
 	
-	// 16.11.8 TIMSK1 – Timer/Counter1 Interrupt Mask Register (p.144)
-	TIMSK1 |= (1 << OCIE1A);
 	while (1)
 	{
 	}

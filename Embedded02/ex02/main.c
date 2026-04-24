@@ -52,14 +52,6 @@ void USART_Init()
 	//USBS0 &= ~(1 << TXB8);
 }
 
-// to caclulate UBRRn, we need to check p.180 of the datasheet:
-// we have two formulas for Asynchronous modes
-// we have to check p.199 of the datasheet for F_CPU = 16e6, which one is the best
-// We can see that the error rate is lower for U2Xn = 1, so we will use the U2X0 = 1 formula,
-// meaning the double speed one:
-// UBRRn = (fOSC / (8 * BAUD)) - 1
-// fOSC = 16 000 000, BAUD = 115200
-// UBRRn = 16.3611111 ~= 16
 int	main(void)
 {
 	USART_Init();
